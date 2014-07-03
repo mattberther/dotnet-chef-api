@@ -9,8 +9,8 @@ Using the class library is relatively straightforward. First, you create an Auth
 Some example code is:
 
 	var baseUri = new Uri("https://api.opscode.com:443"); 
-	var requestUri = new Uri(BaseUri, "/organizations/organization_name/roles");
-	var authenticatedRequest = new AuthenticatedRequest("client_name", uri);
+	var requestUri = new Uri(baseUri, "/organizations/organization_name/roles");
+	var authenticatedRequest = new AuthenticatedRequest("client_name", requestUri);
 
 	authenticatedRequest.Sign(PrivateKey);
 
