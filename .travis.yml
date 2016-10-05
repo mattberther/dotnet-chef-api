@@ -2,7 +2,6 @@ language: csharp
 solution: dotnet-chef-api.sln
 install:
   - nuget restore dotnet-chef-api.sln
-  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
-  - xbuild /p:Configuration=Release dotnet-chef-api.sln
+  - xbuild /p:Configuration=Debug dotnet-chef-api.sln
   - mono ./testrunner/NUnit.Runners.*/tools/nunit-console.exe ./unittests/bin/Release/AuthenticatedChefRequest.Tests.dll
