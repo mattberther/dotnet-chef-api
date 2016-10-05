@@ -3,27 +3,26 @@
     using System;
     using System.IO;
     using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using RestSharp;
+    using NUnit.Framework;
 
-    [TestClass]
+    [TestFixture]
     public class AuthenticatedChefRequestUnitTests
     {
-        [TestMethod]
+        [Test]
         public void ConstructorSetsAcceptHeader()
         {
             // Arrange
             var client = "gmreburn";
             var resource = new Uri("/", UriKind.Relative);
-            
+
             // Act
             var request = new AuthenticatedChefRequest(client, resource);
-            
+
             // Assert
             Assert.AreEqual("application/json", request.Parameters.Single(p => p.Name.Equals("Accept")).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void ConstructorSetsChefVersionHeader()
         {
             // Arrange
@@ -37,7 +36,7 @@
             Assert.AreEqual("11.4.0", request.Parameters.Single(p => p.Name.Equals("X-Chef-Version")).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void ConstructorSetsOpsUserIdHeader()
         {
             // Arrange
@@ -51,7 +50,7 @@
             Assert.AreEqual(client, request.Parameters.Single(p => p.Name.Equals("X-Ops-UserId")).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void SignSetsOpsSignHeader()
         {
             // Arrange
@@ -59,12 +58,13 @@
 
             // Act
             request.Sign(File.ReadAllText("gmreburn.pem"));
-            
+
             // Assert
-            Assert.AreEqual("algorithm=sha1;version=1.0", request.Parameters.Single(p => p.Name.Equals("X-Ops-Sign")).Value);
+            Assert.AreEqual("algorithm=sha1;version=1.0",
+                request.Parameters.Single(p => p.Name.Equals("X-Ops-Sign")).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void SignSetsOpsTimestampHeader()
         {
             // Arrange
@@ -77,7 +77,7 @@
             Assert.IsNotNull(request.Parameters.Single(p => p.Name.Equals("X-Ops-Timestamp")).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void SignSetsOpsContentHashHeader()
         {
             // Arrange
