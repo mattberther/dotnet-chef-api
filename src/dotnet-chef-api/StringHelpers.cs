@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
-
 namespace mattberther.chef
 {
-    static class StringHelpers
+    using System;
+    using System.Collections.Generic;
+
+    internal static class StringHelpers
     {
-        public static string ToBase64EncodedSha1String(this string input)
-        {
-            return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(input)));
-        }
 
         public static IEnumerable<string> Split(this string input, int length)
         {
