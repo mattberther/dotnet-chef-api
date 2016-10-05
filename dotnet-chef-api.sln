@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mattberther.chef", "src\dot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mattberther.chef.unittests", "src\unittests\mattberther.chef.unittests.csproj", "{08923E0D-E2E0-4D26-B171-E2A5633F4AB7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{881A6CBA-4114-4E4D-9A62-0BA25A4EC7D9}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
