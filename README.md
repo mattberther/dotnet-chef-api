@@ -8,13 +8,13 @@ Using the class library is relatively straightforward. First, you create an Auth
 
 Some example code is:
 
-	var baseUri = new Uri("https://api.opscode.com"); 
-	var requestUri = new Uri(baseUri, "/organizations/organization_name/roles");
-	var authenticatedRequest = new AuthenticatedChefRequest("client_name", requestUri);
+	System.Uri baseUri = new System.Uri("https://api.opscode.com"); 
+	System.Uri requestUri = new System.Uri(baseUri, "/organizations/organization_name/roles");
+	mattberther.chef.AuthenticatedChefRequest authenticatedRequest = new AuthenticatedChefRequest("client_name", requestUri);
 
 	authenticatedRequest.Sign(PrivateKey);
 
-	var client = new RestSharp.Client(baseUri);
+	RestSharp.IRestResponse client = new RestSharp.Client(baseUri);
 	string resultContent = client.Execute(authenticatedRequest);
 	Console.WriteLine(resultContent);
 
