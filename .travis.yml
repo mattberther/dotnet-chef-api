@@ -4,4 +4,4 @@ install:
   - nuget restore
 script:
   - xbuild /p:Configuration=Release dotnet-chef-api.sln
-  - ./packages/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./src/unittests/bin/Release/mattberther.chef.unittests.dll
+  - mono ./packages/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./src/unittests/bin/Release/mattberther.chef.unittests.dll
