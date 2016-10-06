@@ -1,47 +1,43 @@
-﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Text;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Signers;
-using Org.BouncyCastle.OpenSsl;
-
-namespace mattberther.chef
+﻿namespace mattberther.chef
 {
-    public class AuthenticatedRequest
+    using Org.BouncyCastle.Crypto;
+    using Org.BouncyCastle.Crypto.Digests;
+    using Org.BouncyCastle.Crypto.Signers;
+    using Org.BouncyCastle.OpenSsl;
+    using RestSharp;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
+
+    public class AuthenticatedChefRequest : RestRequest
     {
         private readonly string client;
-        private readonly Uri requestUri;
-        private readonly HttpMethod method;
-        private readonly string body;
+        private string signature = string.Empty;
 
-        private readonly string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
-        private string signature = String.Empty;
-
-        public AuthenticatedRequest(string client, Uri requestUri)
-            : this(client, requestUri, HttpMethod.Get, String.Empty)
-        {
-        }
-
-        public AuthenticatedRequest(string client, Uri requestUri, HttpMethod method, string body)
+        public AuthenticatedChefRequest(string client, Uri requestUri) : base(requestUri)
         {
             this.client = client;
-            this.requestUri = requestUri;
-            this.method = method;
-            this.body = body;
+            this.AddHeader("Accept", "application/json");
+            this.AddHeader("X-Chef-Version", "11.4.0");
+            this.AddHeader("X-Ops-UserId", client);
         }
 
         public void Sign(string privateKey)
         {
+            string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+
             string canonicalHeader =
-                String.Format(
+                string.Format(
                     "Method:{0}\nHashed Path:{1}\nX-Ops-Content-Hash:{4}\nX-Ops-Timestamp:{3}\nX-Ops-UserId:{2}",
-                    method,
-                    requestUri.AbsolutePath.ToBase64EncodedSha1String(),
+                    Method,
+                    ToBase64EncodedSha1String(this.Resource),
                     client,
                     timestamp,
-                    body.ToBase64EncodedSha1String());
+                    ToBase64EncodedSha1String(GetBody()
+                        ));
 
             byte[] input = Encoding.UTF8.GetBytes(canonicalHeader);
 
@@ -53,33 +49,39 @@ namespace mattberther.chef
             signer.BlockUpdate(input, 0, input.Length);
 
             signature = Convert.ToBase64String(signer.GenerateSignature());
-        }
 
-        public HttpRequestMessage Create()
-        {
-            var requestMessage = new HttpRequestMessage(method, requestUri);
+            this.AddHeader("X-Ops-Sign", "algorithm=sha1;version=1.0");
+            this.AddHeader("X-Ops-Timestamp", timestamp);
+            this.AddHeader("X-Ops-Content-Hash", ToBase64EncodedSha1String(GetBody()));
+            //this.AddHeader("Host", string.Format("{0}:{1}", this.Resource, requestUri.Port)); // TODO this might be taken care of by restsharp
 
-            requestMessage.Headers.Add("Accept", "application/json");
-            requestMessage.Headers.Add("X-Ops-Sign", "algorithm=sha1;version=1.0");
-            requestMessage.Headers.Add("X-Ops-UserId", client);
-            requestMessage.Headers.Add("X-Ops-Timestamp", timestamp);
-            requestMessage.Headers.Add("X-Ops-Content-Hash", body.ToBase64EncodedSha1String());
-            requestMessage.Headers.Add("Host", String.Format("{0}:{1}", requestUri.Host, requestUri.Port));
-            requestMessage.Headers.Add("X-Chef-Version", "11.4.0");
-
-            if (method != HttpMethod.Get)
+            if (Method != Method.GET)
             {
-                requestMessage.Content = new ByteArrayContent(Encoding.UTF8.GetBytes(body));
-                requestMessage.Content.Headers.Add("Content-Type", "application/json");
+                //todo ???.Content = new ByteArrayContent(Encoding.UTF8.GetBytes(Parameters.Single(p => p.Type == ParameterType.RequestBody).Value.ToString()));
+                this.AddHeader("Content-Type", "application/json");
             }
 
             var i = 1;
-            foreach (var line in signature.Split(60))
+            foreach (var line in Chunk(signature, 60))
             {
-                requestMessage.Headers.Add(String.Format("X-Ops-Authorization-{0}", i++), line);
+                this.AddHeader(string.Format("X-Ops-Authorization-{0}", i++), line);
             }
+        }
 
-            return requestMessage;
+        private string ToBase64EncodedSha1String(string input)
+        {
+            return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(input)));
+        }
+
+        private string GetBody()
+        {
+            return Parameters.FirstOrDefault(p => p.Type == ParameterType.RequestBody)?.Value.ToString() ?? string.Empty;
+        }
+
+        private IEnumerable<string> Chunk(string input, int chunkSize)
+        {
+            for (int i = 0; i < input.Length; i += chunkSize)
+                yield return input.Substring(i, Math.Min(chunkSize, input.Length - i));
         }
     }
 }
