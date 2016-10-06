@@ -4,4 +4,4 @@ install:
   - nuget restore
 script:
   - xbuild dotnet-chef-api.sln
-  - mono ./testrunner/NUnit.Runners.*/tools/nunit-console.exe ./unittests/bin/Release/AuthenticatedChefRequest.Tests.dll
+  - mono ./packages.NUnit.ConsoleRunner.3.4.1.tools/nunit3-console.exe ./unittests/bin/Release/AuthenticatedChefRequest.Tests.dll
