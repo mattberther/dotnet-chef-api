@@ -54,10 +54,10 @@
         public void SignSetsOpsSignHeader()
         {
             // Arrange
-            var request = new AuthenticatedChefRequest("gmreburn", new Uri("/", UriKind.Relative));
+            var request = new AuthenticatedChefRequest("test", new Uri("/", UriKind.Relative));
 
             // Act
-            request.Sign(File.ReadAllText("gmreburn.pem"));
+            request.Sign(File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.pem")));
 
             // Assert
             Assert.AreEqual("algorithm=sha1;version=1.0",
@@ -68,10 +68,10 @@
         public void SignSetsOpsTimestampHeader()
         {
             // Arrange
-            var request = new AuthenticatedChefRequest("gmreburn", new Uri("/", UriKind.Relative));
+            var request = new AuthenticatedChefRequest("test", new Uri("/", UriKind.Relative));
 
             // Act
-            request.Sign(File.ReadAllText("gmreburn.pem"));
+            request.Sign(File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.pem")));
 
             // Assert
             Assert.IsNotNull(request.Parameters.Single(p => p.Name.Equals("X-Ops-Timestamp")).Value);
@@ -81,10 +81,10 @@
         public void SignSetsOpsContentHashHeader()
         {
             // Arrange
-            var request = new AuthenticatedChefRequest("gmreburn", new Uri("/", UriKind.Relative));
+            var request = new AuthenticatedChefRequest("test", new Uri("/", UriKind.Relative));
 
             // Act
-            request.Sign(File.ReadAllText("gmreburn.pem"));
+            request.Sign(File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.pem")));
 
             // Assert
             Assert.IsNotNull(request.Parameters.Single(p => p.Name.Equals("X-Ops-Content-Hash")).Value);
