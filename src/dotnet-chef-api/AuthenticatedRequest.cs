@@ -6,6 +6,7 @@
     using Org.BouncyCastle.OpenSsl;
     using RestSharp;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
@@ -61,7 +62,7 @@
             }
 
             var i = 1;
-            foreach (var line in signature.Split(60))
+            foreach (var line in Chunk(signature, 60))
             {
                 this.AddHeader(string.Format("X-Ops-Authorization-{0}", i++), line);
             }
@@ -75,6 +76,12 @@
         private string GetBody()
         {
             return Parameters.FirstOrDefault(p => p.Type == ParameterType.RequestBody)?.Value.ToString() ?? string.Empty;
+        }
+
+        private IEnumerable<string> Chunk(string input, int chunkSize)
+        {
+            for (int i = 0; i < input.Length; i += chunkSize)
+                yield return input.Substring(i, Math.Min(chunkSize, input.Length - i));
         }
     }
 }

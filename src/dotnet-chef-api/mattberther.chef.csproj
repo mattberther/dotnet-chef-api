@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="AuthenticatedRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
