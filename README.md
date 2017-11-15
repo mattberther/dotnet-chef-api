@@ -1,4 +1,6 @@
-﻿# ChefUpdater.NET
+*Please note that the official repo has been transitioned to https://github.com/lholman/dotnet-chef-api*
+
+# ChefUpdater.NET
 This is a simple C# class library used to interact with a Chef Server's REST API. You can use this with a open source and Enterprise versions of the Chef Server.
 
 ## Usage
